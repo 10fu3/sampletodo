@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator pothos {
+  provider          = "prisma-pothos-types"
+  clientOutput      = "@prisma/client"
+  output            = "./pothos-types.ts"
+  generateDatamodel = true
+  documentation     = true
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId BigInt @id @default(autoincrement())
+  id     String @unique @default(uuid())
+
+  createdAt     DateTime        @default(now()) @map("created_at")
+  tokens        UserAuthToken[]
+  userAuthEmail UserAuthEmail?
+  tag           Tag[]
+  todo          Todo[]
+
+  @@map("users")
+}
+
+model Tag {
+  tagId  BigInt @id @default(autoincrement())
+  id     String @unique @default(uuid())
+  userId BigInt
+
+  user User? @relation(fields: [userId], references: [userId])
+
+  name      String    @unique
+  createdAt DateTime  @default(now()) @map("created_at")
+  todoTag   TodoTag[]
+
+  @@map("tags")
+}
+
+model Todo {
+  todoId BigInt @id @default(autoincrement())
+  id     String @unique @default(uuid())
+
+  userId BigInt
+  user   User?  @relation(fields: [userId], references: [userId])
+
+  content String
+  todoTag TodoTag[]
+
+  @@map("todo")
+}
+
+model TodoTag {
+  todoId BigInt
+  tagId  BigInt
+
+  todo Todo @relation(fields: [todoId], references: [todoId])
+  tag  Tag  @relation(fields: [tagId], references: [tagId])
+
+  @@id([tagId, todoId])
+  @@map("todo_tags")
+}
+
+model UserAuthEmail {
+  userId BigInt @id @map("user_id")
+  user   User   @relation(fields: [userId], references: [userId])
+
+  email          String @unique
+  hashedPassword String @unique @map("hashed_password")
+
+  @@map("user_auth_emails")
+}
+
+model UserAuthToken {
+  id    BigInt @id @default(autoincrement())
+  token String @unique @default(uuid())
+
+  userId BigInt
+  user   User   @relation(fields: [userId], references: [userId])
+
+  @@map("user_auth_tokens")
+}

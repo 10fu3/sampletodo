@@ -1,0 +1,731 @@
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar BigInt
+
+"""The `Byte` scalar type represents byte value as a Buffer"""
+scalar Bytes
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar Json
+
+"""
+A field whose value is a hexadecimal: https://en.wikipedia.org/wiki/Hexadecimal.
+"""
+scalar Decimal
+
+enum OrderBy {
+  Asc
+  Desc
+}
+
+input UserAuthTokenFilter {
+  id: BigIntFilter
+  token: StringFilter
+  userId: BigIntFilter
+  user: UserFilter
+}
+
+input BigIntFilter {
+  equals: BigInt
+  in: [BigInt!]
+  notIn: [BigInt!]
+  not: BigIntFilter
+  is: BigInt
+  isNot: BigInt
+  lt: BigInt
+  lte: BigInt
+  gt: BigInt
+  gte: BigInt
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  notIn: [String!]
+  not: StringFilter
+  is: String
+  isNot: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+}
+
+input UserFilter {
+  userId: BigIntFilter
+  id: StringFilter
+  createdAt: DateTimeFilter
+  tokens: UserAuthTokenListFilter
+  userAuthEmail: UserAuthEmailFilter
+  tag: TagListFilter
+  todo: TodoListFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  not: DateTimeFilter
+  is: DateTime
+  isNot: DateTime
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+}
+
+input UserAuthTokenListFilter {
+  every: UserAuthTokenFilter
+  some: UserAuthTokenFilter
+  none: UserAuthTokenFilter
+}
+
+input UserAuthEmailFilter {
+  userId: BigIntFilter
+  user: UserFilter
+  email: StringFilter
+  hashedPassword: StringFilter
+}
+
+input TagFilter {
+  tagId: BigIntFilter
+  id: StringFilter
+  userId: BigIntFilter
+  user: UserFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+  todoTag: TodoTagListFilter
+}
+
+input TodoTagFilter {
+  todoId: BigIntFilter
+  tagId: BigIntFilter
+  todo: TodoFilter
+  tag: TagFilter
+}
+
+input TodoFilter {
+  todoId: BigIntFilter
+  id: StringFilter
+  userId: BigIntFilter
+  user: UserFilter
+  content: StringFilter
+  todoTag: TodoTagListFilter
+}
+
+input TodoTagListFilter {
+  every: TodoTagFilter
+  some: TodoTagFilter
+  none: TodoTagFilter
+}
+
+input TagListFilter {
+  every: TagFilter
+  some: TagFilter
+  none: TagFilter
+}
+
+input TodoListFilter {
+  every: TodoFilter
+  some: TodoFilter
+  none: TodoFilter
+}
+
+input UserAuthTokenOrderBy {
+  id: OrderBy
+  token: OrderBy
+  userId: OrderBy
+  user: UserOrderBy
+}
+
+input UserOrderBy {
+  userId: OrderBy
+  id: OrderBy
+  createdAt: OrderBy
+  tokens: UserAuthTokenOrderBy
+  userAuthEmail: UserAuthEmailOrderBy
+  tag: TagOrderBy
+  todo: TodoOrderBy
+}
+
+input UserAuthEmailOrderBy {
+  userId: OrderBy
+  user: UserOrderBy
+  email: OrderBy
+  hashedPassword: OrderBy
+}
+
+input TagOrderBy {
+  tagId: OrderBy
+  id: OrderBy
+  userId: OrderBy
+  user: UserOrderBy
+  name: OrderBy
+  createdAt: OrderBy
+  todoTag: TodoTagOrderBy
+}
+
+input TodoTagOrderBy {
+  todoId: OrderBy
+  tagId: OrderBy
+  todo: TodoOrderBy
+  tag: TagOrderBy
+}
+
+input TodoOrderBy {
+  todoId: OrderBy
+  id: OrderBy
+  userId: OrderBy
+  user: UserOrderBy
+  content: OrderBy
+  todoTag: TodoTagOrderBy
+}
+
+input UserUniqueFilter {
+  userId: BigInt
+  id: String
+}
+
+input TagUniqueFilter {
+  tagId: BigInt
+  id: String
+  name: String
+}
+
+input TodoUniqueFilter {
+  todoId: BigInt
+  id: String
+}
+
+input TodoTagUniqueFilter {
+  todoId: BigInt
+  tagId: BigInt
+}
+
+input UserAuthEmailUniqueFilter {
+  userId: BigInt
+  email: String
+  hashedPassword: String
+}
+
+input UserAuthTokenUniqueFilter {
+  id: BigInt
+  token: String
+}
+
+input UserCreateInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  tokens: UserCreateTokensRelationInput
+  userAuthEmail: UserCreateUserAuthEmailRelationInput
+  tag: UserCreateTagRelationInput
+  todo: UserCreateTodoRelationInput
+}
+
+input UserCreateTokensRelationInput {
+  create: [UserAuthTokenCreateInput!]
+  connect: [UserAuthTokenUniqueFilter!]
+}
+
+input UserAuthTokenCreateInput {
+  id: BigInt
+  token: String
+}
+
+input UserCreateUserAuthEmailRelationInput {
+  create: UserAuthEmailCreateInput
+  connect: UserAuthEmailUniqueFilter
+}
+
+input UserAuthEmailCreateInput {
+  email: String!
+  hashedPassword: String!
+}
+
+input UserCreateTagRelationInput {
+  create: [TagCreateInput!]
+  connect: [TagUniqueFilter!]
+}
+
+input TagCreateInput {
+  tagId: BigInt
+  id: String
+  name: String!
+  createdAt: DateTime
+  todoTag: TagCreateTodoTagRelationInput
+}
+
+input TagCreateTodoTagRelationInput {
+  create: [TodoTagCreateInput!]
+  connect: [TodoTagUniqueFilter!]
+}
+
+input TodoTagCreateInput {
+  todo: TodoTagCreateTodoRelationInput!
+}
+
+input TodoTagCreateTodoRelationInput {
+  create: TodoCreateInput
+  connect: TodoUniqueFilter
+}
+
+input TodoCreateInput {
+  todoId: BigInt
+  id: String
+  user: TodoCreateUserRelationInput
+  content: String!
+}
+
+input TodoCreateUserRelationInput {
+  create: UserCreateInput
+  connect: UserUniqueFilter
+}
+
+input UserCreateTodoRelationInput {
+  create: [TodoCreateInput!]
+  connect: [TodoUniqueFilter!]
+}
+
+input UserUpdateInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  tokens: UserUpdateTokensRelationInput
+  userAuthEmail: UserUpdateUserAuthEmailRelationInput
+  tag: UserUpdateTagRelationInput
+  todo: UserUpdateTodoRelationInput
+}
+
+input UserUpdateTokensRelationInput {
+  create: [UserAuthTokenCreateInput!]
+  set: [UserAuthTokenUniqueFilter!]
+  disconnect: [UserAuthTokenUniqueFilter!]
+  delete: [UserAuthTokenUniqueFilter!]
+  connect: [UserAuthTokenUniqueFilter!]
+  update: [UserUpdateTokensRelationInputUpdate!]
+  updateMany: [UserUpdateTokensRelationInputUpdateMany!]
+  deleteMany: [UserAuthTokenWithoutUserFilter!]
+}
+
+input UserAuthTokenUpdateWithoutUserInput {
+  id: BigInt
+  token: String
+}
+
+input UserAuthTokenWithoutUserFilter {
+  id: BigIntFilter
+  token: StringFilter
+}
+
+input UserUpdateTokensRelationInputUpdate {
+  where: UserAuthTokenUniqueFilter
+  data: UserAuthTokenUpdateWithoutUserInput
+}
+
+input UserUpdateTokensRelationInputUpdateMany {
+  where: UserAuthTokenWithoutUserFilter
+  data: UserAuthTokenUpdateWithoutUserInput
+}
+
+input UserUpdateUserAuthEmailRelationInput {
+  create: UserAuthEmailCreateInput
+  update: UserAuthEmailUpdateWithoutUserInput
+  connect: UserAuthEmailUniqueFilter
+  disconnect: Boolean
+  delete: Boolean
+}
+
+input UserAuthEmailUpdateWithoutUserInput {
+  email: String
+  hashedPassword: String
+}
+
+input UserUpdateTagRelationInput {
+  create: [TagCreateInput!]
+  set: [TagUniqueFilter!]
+  disconnect: [TagUniqueFilter!]
+  delete: [TagUniqueFilter!]
+  connect: [TagUniqueFilter!]
+  update: [UserUpdateTagRelationInputUpdate!]
+  updateMany: [UserUpdateTagRelationInputUpdateMany!]
+  deleteMany: [TagWithoutUserFilter!]
+}
+
+input TagUpdateWithoutUserInput {
+  tagId: BigInt
+  id: String
+  name: String
+  createdAt: DateTime
+  todoTag: TagUpdateTodoTagRelationInput
+}
+
+input TagUpdateTodoTagRelationInput {
+  create: [TodoTagCreateInput!]
+  set: [TodoTagUniqueFilter!]
+  disconnect: [TodoTagUniqueFilter!]
+  delete: [TodoTagUniqueFilter!]
+  connect: [TodoTagUniqueFilter!]
+  update: [TagUpdateTodoTagRelationInputUpdate!]
+  updateMany: [TagUpdateTodoTagRelationInputUpdateMany!]
+  deleteMany: [TodoTagWithoutTagFilter!]
+}
+
+input TodoTagUpdateWithoutTagInput {
+  todo: TodoTagUpdateTodoRelationInput
+}
+
+input TodoTagUpdateTodoRelationInput {
+  create: TodoCreateInput
+  update: TodoUpdateWithoutTodoTagInput
+  connect: TodoUniqueFilter
+}
+
+input TodoUpdateWithoutTodoTagInput {
+  todoId: BigInt
+  id: String
+  user: TodoUpdateUserRelationInput
+  content: String
+}
+
+input TodoUpdateUserRelationInput {
+  create: UserCreateInput
+  update: UserUpdateWithoutTodoInput
+  connect: UserUniqueFilter
+  disconnect: Boolean
+  delete: Boolean
+}
+
+input UserUpdateWithoutTodoInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  tokens: UserUpdateTokensRelationInput
+  userAuthEmail: UserUpdateUserAuthEmailRelationInput
+  tag: UserUpdateTagRelationInput
+}
+
+input TodoTagWithoutTagFilter {
+  todoId: BigIntFilter
+  todo: TodoFilter
+}
+
+input TagUpdateTodoTagRelationInputUpdate {
+  where: TodoTagUniqueFilter
+  data: TodoTagUpdateWithoutTagInput
+}
+
+input TagUpdateTodoTagRelationInputUpdateMany {
+  where: TodoTagWithoutTagFilter
+  data: TodoTagUpdateWithoutTagInput
+}
+
+input TagWithoutUserFilter {
+  tagId: BigIntFilter
+  id: StringFilter
+  name: StringFilter
+  createdAt: DateTimeFilter
+  todoTag: TodoTagListFilter
+}
+
+input UserUpdateTagRelationInputUpdate {
+  where: TagUniqueFilter
+  data: TagUpdateWithoutUserInput
+}
+
+input UserUpdateTagRelationInputUpdateMany {
+  where: TagWithoutUserFilter
+  data: TagUpdateWithoutUserInput
+}
+
+input UserUpdateTodoRelationInput {
+  create: [TodoCreateInput!]
+  set: [TodoUniqueFilter!]
+  disconnect: [TodoUniqueFilter!]
+  delete: [TodoUniqueFilter!]
+  connect: [TodoUniqueFilter!]
+  update: [UserUpdateTodoRelationInputUpdate!]
+  updateMany: [UserUpdateTodoRelationInputUpdateMany!]
+  deleteMany: [TodoWithoutUserFilter!]
+}
+
+input TodoUpdateWithoutUserInput {
+  todoId: BigInt
+  id: String
+  content: String
+  todoTag: TodoUpdateTodoTagRelationInput
+}
+
+input TodoUpdateTodoTagRelationInput {
+  create: [TodoTagCreateInput!]
+  set: [TodoTagUniqueFilter!]
+  disconnect: [TodoTagUniqueFilter!]
+  delete: [TodoTagUniqueFilter!]
+  connect: [TodoTagUniqueFilter!]
+  update: [TodoUpdateTodoTagRelationInputUpdate!]
+  updateMany: [TodoUpdateTodoTagRelationInputUpdateMany!]
+  deleteMany: [TodoTagWithoutTodoFilter!]
+}
+
+input TodoTagUpdateWithoutTodoInput {
+  tag: TodoTagUpdateTagRelationInput
+}
+
+input TodoTagUpdateTagRelationInput {
+  create: TagCreateInput
+  update: TagUpdateWithoutTodoTagInput
+  connect: TagUniqueFilter
+}
+
+input TagUpdateWithoutTodoTagInput {
+  tagId: BigInt
+  id: String
+  user: TagUpdateUserRelationInput
+  name: String
+  createdAt: DateTime
+}
+
+input TagUpdateUserRelationInput {
+  create: UserCreateInput
+  update: UserUpdateWithoutTagInput
+  connect: UserUniqueFilter
+  disconnect: Boolean
+  delete: Boolean
+}
+
+input UserUpdateWithoutTagInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  tokens: UserUpdateTokensRelationInput
+  userAuthEmail: UserUpdateUserAuthEmailRelationInput
+  todo: UserUpdateTodoRelationInput
+}
+
+input TodoTagWithoutTodoFilter {
+  tagId: BigIntFilter
+  tag: TagFilter
+}
+
+input TodoUpdateTodoTagRelationInputUpdate {
+  where: TodoTagUniqueFilter
+  data: TodoTagUpdateWithoutTodoInput
+}
+
+input TodoUpdateTodoTagRelationInputUpdateMany {
+  where: TodoTagWithoutTodoFilter
+  data: TodoTagUpdateWithoutTodoInput
+}
+
+input TodoWithoutUserFilter {
+  todoId: BigIntFilter
+  id: StringFilter
+  content: StringFilter
+  todoTag: TodoTagListFilter
+}
+
+input UserUpdateTodoRelationInputUpdate {
+  where: TodoUniqueFilter
+  data: TodoUpdateWithoutUserInput
+}
+
+input UserUpdateTodoRelationInputUpdateMany {
+  where: TodoWithoutUserFilter
+  data: TodoUpdateWithoutUserInput
+}
+
+input TagUpdateInput {
+  tagId: BigInt
+  id: String
+  user: TagUpdateUserRelationInput
+  name: String
+  createdAt: DateTime
+  todoTag: TagUpdateTodoTagRelationInput
+}
+
+input TodoUpdateInput {
+  todoId: BigInt
+  id: String
+  user: TodoUpdateUserRelationInput
+  content: String
+  todoTag: TodoUpdateTodoTagRelationInput
+}
+
+input TodoTagUpdateInput {
+  todo: TodoTagUpdateTodoRelationInput
+  tag: TodoTagUpdateTagRelationInput
+}
+
+input UserAuthEmailUpdateInput {
+  user: UserAuthEmailUpdateUserRelationInput
+  email: String
+  hashedPassword: String
+}
+
+input UserAuthEmailUpdateUserRelationInput {
+  create: UserCreateInput
+  update: UserUpdateWithoutUserAuthEmailInput
+  connect: UserUniqueFilter
+}
+
+input UserUpdateWithoutUserAuthEmailInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  tokens: UserUpdateTokensRelationInput
+  tag: UserUpdateTagRelationInput
+  todo: UserUpdateTodoRelationInput
+}
+
+input UserAuthTokenUpdateInput {
+  id: BigInt
+  token: String
+  user: UserAuthTokenUpdateUserRelationInput
+}
+
+input UserAuthTokenUpdateUserRelationInput {
+  create: UserCreateInput
+  update: UserUpdateWithoutTokensInput
+  connect: UserUniqueFilter
+}
+
+input UserUpdateWithoutTokensInput {
+  userId: BigInt
+  id: String
+  createdAt: DateTime
+  userAuthEmail: UserUpdateUserAuthEmailRelationInput
+  tag: UserUpdateTagRelationInput
+  todo: UserUpdateTodoRelationInput
+}
+
+type User {
+  userId: ID
+  id: String!
+  createdAt: DateTime!
+  tokens(filter: UserAuthTokenFilter, orderBy: [UserAuthTokenOrderBy!], limit: Int, offset: Int): [UserAuthToken!]!
+  tokensCount(filter: UserAuthTokenFilter): Int!
+  userAuthEmail: UserAuthEmail
+  tag(filter: TagFilter, orderBy: [TagOrderBy!], limit: Int, offset: Int): [Tag!]!
+  tagCount(filter: TagFilter): Int!
+  todo(filter: TodoFilter, orderBy: [TodoOrderBy!], limit: Int, offset: Int): [Todo!]!
+  todoCount(filter: TodoFilter): Int!
+}
+
+type Tag {
+  tagId: ID
+  id: String!
+  userId: BigInt!
+  user: User
+  name: String!
+  createdAt: DateTime!
+  todoTag(filter: TodoTagFilter, orderBy: [TodoTagOrderBy!], limit: Int, offset: Int): [TodoTag!]!
+  todoTagCount(filter: TodoTagFilter): Int!
+}
+
+type Todo {
+  todoId: ID
+  id: String!
+  userId: BigInt!
+  user: User
+  content: String!
+  todoTag(filter: TodoTagFilter, orderBy: [TodoTagOrderBy!], limit: Int, offset: Int): [TodoTag!]!
+  todoTagCount(filter: TodoTagFilter): Int!
+}
+
+type TodoTag {
+  todoId: BigInt!
+  tagId: BigInt!
+  todo: Todo!
+  tag: Tag!
+}
+
+type UserAuthEmail {
+  userId: ID
+  user: User!
+  email: String!
+  hashedPassword: String!
+}
+
+type UserAuthToken {
+  id: ID
+  token: String!
+  userId: BigInt!
+  user: User!
+}
+
+type Query {
+  countUser(filter: UserFilter): Int
+  countTag(filter: TagFilter): Int
+  countTodo(filter: TodoFilter): Int
+  countTodoTag(filter: TodoTagFilter): Int
+  countUserAuthEmail(filter: UserAuthEmailFilter): Int
+  countUserAuthToken(filter: UserAuthTokenFilter): Int
+  findUniqueUser(filter: UserUniqueFilter!): User
+  findUniqueTag(filter: TagUniqueFilter!): Tag
+  findUniqueTodo(filter: TodoUniqueFilter!): Todo
+  findUniqueTodoTag(filter: TodoTagUniqueFilter!): TodoTag
+  findUniqueUserAuthEmail(filter: UserAuthEmailUniqueFilter!): UserAuthEmail
+  findUniqueUserAuthToken(filter: UserAuthTokenUniqueFilter!): UserAuthToken
+  findFirstUser(filter: UserFilter, orderBy: [UserOrderBy!]): User
+  findFirstTag(filter: TagFilter, orderBy: [TagOrderBy!]): Tag
+  findFirstTodo(filter: TodoFilter, orderBy: [TodoOrderBy!]): Todo
+  findFirstTodoTag(filter: TodoTagFilter, orderBy: [TodoTagOrderBy!]): TodoTag
+  findFirstUserAuthEmail(filter: UserAuthEmailFilter, orderBy: [UserAuthEmailOrderBy!]): UserAuthEmail
+  findFirstUserAuthToken(filter: UserAuthTokenFilter, orderBy: [UserAuthTokenOrderBy!]): UserAuthToken
+  findManyUser(filter: UserFilter, orderBy: [UserOrderBy!], limit: Int, offset: Int): [User!]
+  findManyTag(filter: TagFilter, orderBy: [TagOrderBy!], limit: Int, offset: Int): [Tag!]
+  findManyTodo(filter: TodoFilter, orderBy: [TodoOrderBy!], limit: Int, offset: Int): [Todo!]
+  findManyTodoTag(filter: TodoTagFilter, orderBy: [TodoTagOrderBy!], limit: Int, offset: Int): [TodoTag!]
+  findManyUserAuthEmail(filter: UserAuthEmailFilter, orderBy: [UserAuthEmailOrderBy!], limit: Int, offset: Int): [UserAuthEmail!]
+  findManyUserAuthToken(filter: UserAuthTokenFilter, orderBy: [UserAuthTokenOrderBy!], limit: Int, offset: Int): [UserAuthToken!]
+}
+
+type Mutation {
+  createOneUser(input: UserCreateInput!): User
+  createOneTag(input: TagCreateInput!): Tag
+  createOneTodo(input: TodoCreateInput!): Todo
+  createOneTodoTag(input: TodoTagCreateInput!): TodoTag
+  createOneUserAuthEmail(input: UserAuthEmailCreateInput!): UserAuthEmail
+  createOneUserAuthToken(input: UserAuthTokenCreateInput!): UserAuthToken
+  createManyUser(input: [UserCreateInput!]!): Int
+  createManyTag(input: [TagCreateInput!]!): Int
+  createManyTodo(input: [TodoCreateInput!]!): Int
+  createManyTodoTag(input: [TodoTagCreateInput!]!): Int
+  createManyUserAuthEmail(input: [UserAuthEmailCreateInput!]!): Int
+  createManyUserAuthToken(input: [UserAuthTokenCreateInput!]!): Int
+  updateOneUser(where: UserUniqueFilter!, data: UserUpdateInput!): User
+  updateOneTag(where: TagUniqueFilter!, data: TagUpdateInput!): Tag
+  updateOneTodo(where: TodoUniqueFilter!, data: TodoUpdateInput!): Todo
+  updateOneTodoTag(where: TodoTagUniqueFilter!, data: TodoTagUpdateInput!): TodoTag
+  updateOneUserAuthEmail(where: UserAuthEmailUniqueFilter!, data: UserAuthEmailUpdateInput!): UserAuthEmail
+  updateOneUserAuthToken(where: UserAuthTokenUniqueFilter!, data: UserAuthTokenUpdateInput!): UserAuthToken
+  updateManyUser(where: UserFilter!, data: UserUpdateInput!): Int
+  updateManyTag(where: TagFilter!, data: TagUpdateInput!): Int
+  updateManyTodo(where: TodoFilter!, data: TodoUpdateInput!): Int
+  updateManyTodoTag(where: TodoTagFilter!, data: TodoTagUpdateInput!): Int
+  updateManyUserAuthEmail(where: UserAuthEmailFilter!, data: UserAuthEmailUpdateInput!): Int
+  updateManyUserAuthToken(where: UserAuthTokenFilter!, data: UserAuthTokenUpdateInput!): Int
+  deleteOneUser(where: UserUniqueFilter!): User
+  deleteOneTag(where: TagUniqueFilter!): Tag
+  deleteOneTodo(where: TodoUniqueFilter!): Todo
+  deleteOneTodoTag(where: TodoTagUniqueFilter!): TodoTag
+  deleteOneUserAuthEmail(where: UserAuthEmailUniqueFilter!): UserAuthEmail
+  deleteOneUserAuthToken(where: UserAuthTokenUniqueFilter!): UserAuthToken
+  deleteManyUser(where: UserFilter!): Int
+  deleteManyTag(where: TagFilter!): Int
+  deleteManyTodo(where: TodoFilter!): Int
+  deleteManyTodoTag(where: TodoTagFilter!): Int
+  deleteManyUserAuthEmail(where: UserAuthEmailFilter!): Int
+  deleteManyUserAuthToken(where: UserAuthTokenFilter!): Int
+}
